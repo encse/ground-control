@@ -22,10 +22,10 @@ export class Map {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         this.observer = observer;
         this.satellite = satellite;
-        setInterval(() => this.drawMap(), 1)
     }
 
-    drawMap() {
+    tick(clock: Clock) {
+
         function hasWrapAround(prevValue: number, newValue: number): boolean {
             // Calculate the absolute difference between the two values
             const diff = Math.abs(newValue - prevValue);
@@ -75,8 +75,8 @@ export class Map {
         for (let i = 0; i < this.path.length; i++) {
             const tMin = (i - this.path.length / 2) * 60;
 
-            const prev = this.satellite.getSatPos(tMin - 60);
-            const curr = this.satellite.getSatPos(tMin);
+            const prev = this.satellite.getSatPos(clock.getTime(tMin - 60));
+            const curr = this.satellite.getSatPos(clock.getTime(tMin));
 
             if (!prev || !curr || hasWrapAround(prev[0], curr[0]) || hasWrapAround(prev[1], curr[1])) {
                 this.path[i].remove();
@@ -95,11 +95,11 @@ export class Map {
 
         this.observerMarker.setLatLng([this.observer.latitude, this.observer.longitude]);
 
-        let satelliteCurr = this.satellite.getSatPos(0);
+        let satelliteCurr = this.satellite.getSatPos(clock.getTime(0));
         if (satelliteCurr) {
             this.satelliteMarker?.setLatLng(satelliteCurr);
 
-            const elevation = this.satellite.getElevation(0);
+            const elevation = this.satellite.getElevation(clock.getTime(0));
             if (elevation) {
                 const alpha = Math.acos(earthRadius / (earthRadius + elevation));
                 const footPrintRadius = alpha * earthRadius * 1000;

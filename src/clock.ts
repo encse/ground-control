@@ -1,13 +1,13 @@
 
 export class Clock {
-    epoch: Date;
+    now: Date;
 
     constructor(epoc: Date) {
-        this.epoch = epoc;
+        this.now = epoc;
     }
 
     getTime(seconds: number): Date {
-        const modified = new Date(this.epoch);
+        const modified = new Date(this.now);
         modified.setSeconds(modified.getSeconds() + seconds);
         return modified;
     }
