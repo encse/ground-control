@@ -2,7 +2,11 @@ import * as satellite from 'satellite.js';
 import { Observer } from './observer';
 import { earthRadius } from './map';
 
-
+type LookAnglesDeg = {
+    azimuth: satellite.Degrees;
+    elevation: satellite.Degrees;
+    rangeSat: satellite.Kilometer;
+}
 export class Satellite {
 
     satelliteRecord: satellite.SatRec;
@@ -18,7 +22,7 @@ export class Satellite {
         this.frequencyMhz = frequencyMhz;
     }
 
-    getLookAngles(time: Date, observer: Observer): satellite.LookAngles | null {
+    getLookAngles(time: Date, observer: Observer): LookAnglesDeg | null {
         const posAndVelocity = satellite.propagate(this.satelliteRecord, time);
         if (!(posAndVelocity.position instanceof Object)) {
             return null;
@@ -26,14 +30,24 @@ export class Satellite {
 
         const positionEcf = satellite.eciToEcf(posAndVelocity.position, satellite.gstime(time))
 
-        return satellite.ecfToLookAngles(
+        const res = satellite.ecfToLookAngles(
             {
                 height: 0,
-                latitude: satellite.degreesToRadians(observer.latitude),
-                longitude: satellite.degreesToRadians(observer.longitude)
+                latitude: satellite.degreesToRadians(observer.lat),
+                longitude: satellite.degreesToRadians(observer.lng)
             },
             positionEcf
-        )
+        );
+
+        if (res == null) {
+            return res
+        }
+        return {
+            azimuth: res.azimuth / Math.PI * 180,
+            elevation: res.elevation / Math.PI * 180,
+            rangeSat: res.rangeSat,
+        }
+
     }
 
     

@@ -18,7 +18,7 @@ export class Map {
 
     constructor(observer: Observer, satellite: Satellite) {
 
-        this.map = L.map('map').setView([observer.latitude, observer.longitude], 2);
+        this.map = L.map('map').setView([observer.lat, observer.lng], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         this.observer = observer;
         this.satellite = satellite;
@@ -93,7 +93,7 @@ export class Map {
         }
 
 
-        this.observerMarker.setLatLng([this.observer.latitude, this.observer.longitude]);
+        this.observerMarker.setLatLng([this.observer.lat, this.observer.lng]);
 
         let satelliteCurr = this.satellite.getSatPos(clock.getTime(0));
         if (satelliteCurr) {

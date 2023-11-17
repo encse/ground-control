@@ -11,6 +11,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/leaflet": "^1.9.8",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
     "copy-webpack-plugin": "^11.0.0",
     "leaflet": "^1.9.4",
     "ts-loader": "^9.5.0",
@@ -20,7 +22,11 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
     "satellite": "0.0.2",
-    "satellite.js": "^5.0.0"
+    "satellite.js": "^5.0.0",
+    "styled-components": "^6.1.1"
   }
 }

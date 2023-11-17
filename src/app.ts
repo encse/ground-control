@@ -4,6 +4,7 @@ import { Radio } from './radio';
 import { Satellite } from './satellite';
 
 
+
 async function loadAudio(url: string): Promise<AudioBuffer> {
     const result = await fetch(url);
     const arrayBuffer = await result.arrayBuffer();
@@ -17,9 +18,8 @@ async function loadAudio(url: string): Promise<AudioBuffer> {
 async function main() {
 
     const observer = {
-        latitude: 47.49801,
-        longitude: 19.03991,
-        elevation: 0,
+        lat: 47.49801,
+        lng: 19.03991,
     }
 
 
@@ -113,4 +113,3 @@ async function main() {
 }
 
 
-main()
