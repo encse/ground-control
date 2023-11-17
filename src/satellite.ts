@@ -36,24 +36,30 @@ export class Satellite {
         )
     }
 
+    
+    sampleStart  = 0
     getSample(time: Date, signalLengthMs: number): Float32Array {
 
-        let sampleStartSec = (time.getTime() / 1000) % this.audio.duration;
-        let sampleEndSec = sampleStartSec + signalLengthMs / 1000;
+        const samplesRequired = Math.floor(signalLengthMs / 1000 * this.audio.sampleRate);
 
         const part1 = this.audio.getChannelData(0).subarray(
-            this.audio.sampleRate * sampleStartSec,
-            this.audio.sampleRate * sampleEndSec
+            this.sampleStart,
+            this.sampleStart + samplesRequired
         )
-        
-        if (part1.length < this.audio.sampleRate) {
+
+        this.sampleStart += samplesRequired;
+        this.sampleStart %= this.audio.getChannelData(0).length;
+
+        const samplesCaptured =  part1.length
+        if (samplesCaptured == samplesRequired) {
             return part1;
         }
 
         // wrap around
-        const res = new Float32Array(this.audio.sampleRate * signalLengthMs / 1000);
+        const samplesMissing = samplesRequired - samplesCaptured;
+        const res = new Float32Array(samplesRequired);
         res.set(part1)
-        res.set(this.audio.getChannelData(0).subarray(0, res.length - part1.length), part1.length);
+        res.set(this.audio.getChannelData(0).subarray(0, samplesMissing), part1.length);
         return res;
     }
 

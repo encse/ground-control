@@ -48,8 +48,8 @@ async function main() {
 
     const slider = document.createElement("input");
     slider.setAttribute("type", "range");
-    slider.min = "-100";
-    slider.max = "100";
+    slider.min = "-200";
+    slider.max = "200";
     document.body.appendChild(slider);
     slider.oninput = (e) => {
         const modified = new Date(epoch);
@@ -57,20 +57,24 @@ async function main() {
         clock.now = modified
     }
     
-    const button = document.createElement("button");
-    button.textContent = "play";
-    button.onclick = () => {radio.toggle()}
-    document.body.append(button);
 
+    const radioDiv = document.createElement("div");
+    document.body.append(radioDiv);
+    const radioButton = document.createElement("button");
+    radioButton.onclick = () => {
+        radio.toggle();
+    }
+
+    radioDiv.append(radioButton);
+
+    const signalStrengthDisplay = document.createElement("span");
+    radioDiv.append(signalStrengthDisplay);
 
     const clockDisplay = document.createElement("div");
     document.body.append(clockDisplay);
     
     const distanceKmDisplay = document.createElement("div");
     document.body.append(distanceKmDisplay);
-    
-    const signalStrengthDisplay = document.createElement("div");
-    document.body.append(signalStrengthDisplay);
     
     const elevationDisplay = document.createElement("div");
     document.body.append(elevationDisplay);
@@ -90,15 +94,19 @@ async function main() {
 
         distanceKmDisplay.textContent = 'range sat: ';
         signalStrengthDisplay.textContent = 'signal strength: ';
-        
+        radioButton.textContent = radio.turnedOn() ? "on" : "off";
         if (lookAngles) {
             distanceKmDisplay.textContent += `${lookAngles.rangeSat.toFixed(0)} km`;
             const signalDb = radio.getSignalStrength(satellite.antennaPowerW, satellite.frequencyMhz, lookAngles);
             if (isFinite(signalDb)) {
-                signalStrengthDisplay.textContent += `${signalDb.toFixed(0)} dB`;
+                signalStrengthDisplay.textContent += `${signalDb.toFixed(0)} dBFV`;
             } else {
-                signalStrengthDisplay.textContent += `- dB`;
+                signalStrengthDisplay.textContent += `- dBFV`;
             }
+        }
+
+        if (!radio.turnedOn()) {
+            signalStrengthDisplay.textContent = "";
         }
         now += dt;
     }, 16);
