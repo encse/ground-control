@@ -14,8 +14,12 @@ export class Satellite {
 
     antennaPowerW: number;
     frequencyMhz: number;
+    tle1: string;
+    tle2: string;
 
     constructor(tle1: string, tle2: string, audio: AudioBuffer, antennaPowerW: number, frequencyMhz: number) {
+        this.tle1 = tle1;
+        this.tle2 = tle2;
         this.satelliteRecord = satellite.twoline2satrec(tle1, tle2);
         this.audio = audio;
         this.antennaPowerW = antennaPowerW;
@@ -50,8 +54,8 @@ export class Satellite {
 
     }
 
-    
-    sampleStart  = 0
+
+    sampleStart = 0
     getSample(time: Date, signalLengthMs: number): Float32Array {
 
         const samplesRequired = Math.floor(signalLengthMs / 1000 * this.audio.sampleRate);
@@ -64,7 +68,7 @@ export class Satellite {
         this.sampleStart += samplesRequired;
         this.sampleStart %= this.audio.getChannelData(0).length;
 
-        const samplesCaptured =  part1.length
+        const samplesCaptured = part1.length
         if (samplesCaptured == samplesRequired) {
             return part1;
         }

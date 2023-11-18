@@ -23,7 +23,7 @@ async function main() {
     }
 
 
-    const satelliteAntennaPowerW = 5; 
+    const satelliteAntennaPowerW = 5;
     const frequencyMhz = 137.5;
     const receiverAntennaGainDb = 5; //for Yagi
     const noiseDb = -100;
@@ -56,7 +56,7 @@ async function main() {
         modified.setMinutes(modified.getMinutes() + slider.valueAsNumber);
         clock.now = modified
     }
-    
+
 
     const radioDiv = document.createElement("div");
     document.body.append(radioDiv);
@@ -72,20 +72,20 @@ async function main() {
 
     const clockDisplay = document.createElement("div");
     document.body.append(clockDisplay);
-    
+
     const distanceKmDisplay = document.createElement("div");
     document.body.append(distanceKmDisplay);
-    
+
     const elevationDisplay = document.createElement("div");
     document.body.append(elevationDisplay);
 
     let now = new Date().getTime();
-    setInterval(() => { 
+    setInterval(() => {
         let dt = new Date().getTime() - now;
         const modified = clock.getTime(0);
         modified.setMilliseconds(modified.getMilliseconds() + dt);
         clock.now = modified
-        
+
         map.tick(clock);
         radio.tick(clock);
         clockDisplay.textContent = clock.getTime(0).toISOString();
