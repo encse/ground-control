@@ -1,15 +1,16 @@
 import * as satellite from 'satellite.js';
 import { Observer } from './observer';
-import { earthRadius } from './map';
 
-type LookAnglesDeg = {
+const earthRadius = 6378.13;
+
+export type LookAnglesDeg = {
     azimuth: satellite.Degrees;
     elevation: satellite.Degrees;
     rangeSat: satellite.Kilometer;
 }
 export class Satellite {
 
-    satelliteRecord: satellite.SatRec;
+    public satelliteRecord: satellite.SatRec;
     audio: AudioBuffer;
 
     antennaPowerW: number;
@@ -46,6 +47,7 @@ export class Satellite {
         if (res == null) {
             return res
         }
+
         return {
             azimuth: res.azimuth / Math.PI * 180,
             elevation: res.elevation / Math.PI * 180,

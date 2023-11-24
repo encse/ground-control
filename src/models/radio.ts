@@ -1,5 +1,4 @@
 import { LookAngles } from 'satellite.js';
-import { Clock } from './clock';
 import { Observer } from './observer';
 import { Satellite } from './satellite';
 
@@ -23,21 +22,6 @@ export class Radio {
         this.noiseDbfv = this.toDbfv(noiseDb);
     }
 
-
-    turnedOn() {
-        return this.audioContext;
-    }
-    
-    async toggle() {
-        if (this.audioContext) {
-            await this.audioContext.close();
-            this.audioContext = undefined;
-            this.audioLengthMs = 0;
-            this.audioStart = undefined;
-        } else {
-            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        }
-    }
 
     private generateWhiteNoise(ms: number): Float32Array {
         const noise = new Float32Array(ms / 1000 * this.sampleRate);
@@ -103,31 +87,46 @@ export class Radio {
         return mixedSignal;
     }
 
-    tick(clock: Clock) {
+    tick(now: Date, turnedOn: boolean) {
+
+        // 'now' is in simulation time but we generate audio in real time, so we need
+        // to know how much time was spent since tick was last called, in order to
+        // calculate when will the audio buffer run out
+        let realNow = new Date();
+
+        if (!turnedOn && this.audioContext) {
+            this.audioContext.close();
+            this.audioContext = undefined;
+            this.audioLengthMs = 0;
+            this.audioStart = undefined;
+        } else if (turnedOn && !this.audioContext) {
+            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
 
         if (!this.audioContext) {
             return;
         }
 
-        let now = new Date();
-
         if (!this.audioStart) {
-            this.audioStart = now;
+            this.audioStart = realNow;
             this.audioLengthMs = 0;
         }
 
-        let inBufferMs = Math.max(0, this.audioLengthMs - (now.getTime() - this.audioStart.getTime()));
+        let inBufferMs = Math.max(0, this.audioLengthMs - (realNow.getTime() - this.audioStart.getTime()));
 
         const generateMs = bufferLengthMs - inBufferMs;
         if (generateMs <= 0) {
             return;
         }
 
+        // generate samples at the end of the buffer, so advance time by the buffered ms.
+        now.setMilliseconds(now.getMilliseconds() + inBufferMs);
+
         const noise = this.generateWhiteNoise(generateMs);
-        const signal = this.satellite.getSample(clock.getTime(inBufferMs / 1000), generateMs);
+        const signal = this.satellite.getSample(now, generateMs);
 
         let signalDbfv = -Infinity;
-        const lookAngles = this.satellite.getLookAngles(clock.getTime(inBufferMs / 1000), this.observer)
+        const lookAngles = this.satellite.getLookAngles(now, this.observer)
         if (lookAngles) {
             signalDbfv = this.getSignalStrength(this.satellite.antennaPowerW, this.satellite.frequencyMhz, lookAngles)
         }

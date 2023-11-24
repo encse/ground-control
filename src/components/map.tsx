@@ -1,6 +1,6 @@
 import L from "leaflet";
-import { Observer } from "../observer";
-import { Satellite } from "../satellite";
+import { Observer } from "../models/observer";
+import { Satellite } from "../models/satellite";
 import { Circle, Polyline, MapContainer, Marker, TileLayer } from "react-leaflet";
 import React, { type CSSProperties, type ReactNode } from 'react';
 
@@ -54,7 +54,7 @@ const SatelliteComponent = React.memo<SatelliteComponentProps>((props) => {
     }
 
     const path = [];
-    const numPoints = 90;
+    const numPoints = 200;
 
     
     for (let i = 0; i < numPoints; i++) {
