@@ -17,6 +17,6 @@ ffmpeg -i foobar.wav -af "apad=pad_dur=5" static/sstv.mp3
 
 Deploy:
 ```
-npm build
 push
 ```
+it should trigger a workflow that calls `npm build` then deploys to production
