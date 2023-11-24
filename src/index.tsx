@@ -32,7 +32,7 @@ const Loader = () => {
     }, []);
 
     if (audio == null) {
-        return <div>loading</div>;
+        return <div>Loading...</div>;
     } else {
         const satelliteAntennaPowerW = 5;
         const frequencyMhz = 137.5;
