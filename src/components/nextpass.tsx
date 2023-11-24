@@ -3,9 +3,22 @@ import { Satellite } from "../models/satellite";
 import { Observer } from "../models/observer";
 import { DateTime } from "./date";
 
+const elevationLimitDeg = 5;
+
 const Control = React.memo<{ satellite: Satellite, observer: Observer, timeMinutes: number }>((props) => {
     let passStartSeconds = props.timeMinutes * 60;
     let maxElevation = 0;
+
+    // skip current pass:
+    for (let step = 0; step < 10000; step++) {
+        const time = new Date(passStartSeconds * 1000)
+        const lookAngles = props.satellite.getLookAngles(time, props.observer)
+        const elevation = lookAngles?.elevation ?? 0;
+        if (elevation < 0) {
+            break;
+        }
+        passStartSeconds+=5*60;
+    }
 
     // take five minute steps:
     for (let step = 0; step < 10000; step++) {
@@ -14,7 +27,7 @@ const Control = React.memo<{ satellite: Satellite, observer: Observer, timeMinut
         const elevation = lookAngles?.elevation ?? 0;
         
         maxElevation = Math.max(maxElevation, elevation)
-        if (maxElevation >= 2) {
+        if (maxElevation >= elevationLimitDeg) {
             break;
         }
         passStartSeconds+=5*60;
@@ -29,7 +42,7 @@ const Control = React.memo<{ satellite: Satellite, observer: Observer, timeMinut
         const time = new Date(passStartSeconds * 1000)
         const lookAngles = props.satellite.getLookAngles(time, props.observer)
         const elevation = lookAngles?.elevation ?? 0;
-        if (elevation < 2) {
+        if (elevation < 0) {
             break;
         }
         passStartSeconds--;
@@ -45,7 +58,7 @@ const Control = React.memo<{ satellite: Satellite, observer: Observer, timeMinut
 
         maxElevation = Math.max(maxElevation, elevation)
 
-        if (elevation < 2) {
+        if (elevation < 0) {
             break;
         }
     }

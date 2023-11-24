@@ -14,3 +14,9 @@ pip install pysstv
 python3 -m pysstv --mode PD120 --vox --fskid csokavar image.png foobar.wav
 ffmpeg -i foobar.wav -af "apad=pad_dur=5" static/sstv.mp3
 ```
+
+Deploy:
+```
+npm build
+push
+```
