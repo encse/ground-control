@@ -125,7 +125,7 @@ const App = (props: { satellite: Satellite, radio: Radio, observer: Observer }) 
                 </InfoRow>
                 <InfoRow>
                     <LabelCell>Frequency:</LabelCell>
-                    <DataCell>{props.satellite.frequencyMhz} Mhz</DataCell>
+                    <DataCell>{props.radio.frequencyMhz} Mhz</DataCell>
                 </InfoRow>
             </InfoTable>
 

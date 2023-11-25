@@ -11,22 +11,17 @@ export type LookAnglesDeg = {
 export class Satellite {
 
     public satelliteRecord: satellite.SatRec;
-    audio: AudioBuffer;
 
-    antennaPowerW: number;
-    frequencyMhz: number;
     tle1: string;
     tle2: string;
 
-    constructor(tle1: string, tle2: string, audio: AudioBuffer, antennaPowerW: number, frequencyMhz: number) {
+    constructor(tle1: string, tle2: string) {
         this.tle1 = tle1;
         this.tle2 = tle2;
         this.satelliteRecord = satellite.twoline2satrec(tle1, tle2);
-        this.audio = audio;
-        this.antennaPowerW = antennaPowerW;
-        this.frequencyMhz = frequencyMhz;
     }
 
+    
     getLookAngles(time: Date, observer: Observer): LookAnglesDeg | null {
         const posAndVelocity = satellite.propagate(this.satelliteRecord, time);
         if (!(posAndVelocity.position instanceof Object)) {
@@ -54,33 +49,6 @@ export class Satellite {
             rangeSat: res.rangeSat,
         }
 
-    }
-
-
-    sampleStart = 0
-    getSample(time: Date, signalLengthMs: number): Float32Array {
-
-        const samplesRequired = Math.floor(signalLengthMs / 1000 * this.audio.sampleRate);
-
-        const part1 = this.audio.getChannelData(0).subarray(
-            this.sampleStart,
-            this.sampleStart + samplesRequired
-        )
-
-        this.sampleStart += samplesRequired;
-        this.sampleStart %= this.audio.getChannelData(0).length;
-
-        const samplesCaptured = part1.length
-        if (samplesCaptured == samplesRequired) {
-            return part1;
-        }
-
-        // wrap around
-        const samplesMissing = samplesRequired - samplesCaptured;
-        const res = new Float32Array(samplesRequired);
-        res.set(part1)
-        res.set(this.audio.getChannelData(0).subarray(0, samplesMissing), part1.length);
-        return res;
     }
 
     getSatPos(time: Date): [number, number] | null {

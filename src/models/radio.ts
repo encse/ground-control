@@ -10,21 +10,74 @@ export class Radio {
     audioStart: Date | undefined;
     audioContext: AudioContext | undefined;
     observer: Observer;
-    sampleRate: number;
     antennaGainDb: number;
     noiseDbfv: number;
 
-    constructor(observer: Observer, satellite: Satellite, sampleRate: number, antennaGainDb: number, noiseDb: number) {
+    audio: AudioBuffer | undefined;
+
+    antennaPowerW: number;
+    frequencyMhz: number;
+    sampleStart = 0
+
+    constructor(
+        observer: Observer,
+        satellite: Satellite,
+        antennaPowerW: number,
+        frequencyMhz: number,
+        antennaGainDb: number,
+        noiseDb: number,
+        audioUrl:  string,
+    ) {
         this.satellite = satellite;
         this.observer = observer;
-        this.sampleRate = sampleRate;
         this.antennaGainDb = antennaGainDb;
         this.noiseDbfv = this.toDbfv(noiseDb);
+        this.antennaPowerW = antennaPowerW;
+        this.frequencyMhz = frequencyMhz;
+
+        this.loadAudio(audioUrl);
+
+    }
+
+    async loadAudio(url: string) {
+        const result = await fetch(url);
+        const arrayBuffer = await result.arrayBuffer();
+
+        this.audio = await new Promise((resolve, reject) => {
+            const audioContext =
+                new (window.AudioContext || (window as any).webkitAudioContext)();
+            audioContext.decodeAudioData(arrayBuffer, resolve, reject);
+        });
     }
 
 
-    private generateWhiteNoise(ms: number): Float32Array {
-        const noise = new Float32Array(ms / 1000 * this.sampleRate);
+    getSample(audio: AudioBuffer, time: Date, signalLengthMs: number): Float32Array {
+
+        const samplesRequired = Math.floor(signalLengthMs / 1000 * audio.sampleRate);
+
+        const part1 = audio.getChannelData(0).subarray(
+            this.sampleStart,
+            this.sampleStart + samplesRequired
+        )
+
+        this.sampleStart += samplesRequired;
+        this.sampleStart %= audio.getChannelData(0).length;
+
+        const samplesCaptured = part1.length
+        if (samplesCaptured == samplesRequired) {
+            return part1;
+        }
+
+        // wrap around
+        const samplesMissing = samplesRequired - samplesCaptured;
+        const res = new Float32Array(samplesRequired);
+        res.set(part1)
+        res.set(this.audio!.getChannelData(0).subarray(0, samplesMissing), part1.length);
+        return res;
+    }
+
+    private generateWhiteNoise(sampleRate: number, ms: number): Float32Array {
+        const noise = new Float32Array(ms / 1000 * sampleRate);
         for (let i = 0; i < noise.length; i++) {
             noise[i] = (Math.random() * 2 - 1);
         }
@@ -68,6 +121,7 @@ export class Radio {
             return (max - min) / (srcMax - srcMin) * (db - srcMin) + min;
         }
     }
+
     private mixSignals(
         volume: number,
         signal: Float32Array,
@@ -79,8 +133,8 @@ export class Radio {
         let scalingFactorSignal = isFinite(signalDbfv) ?  10 ** (signalDbfv / 20) : 0;
         let scalingFactorNoise = isFinite(noiseDbfv) ?  10 ** (noiseDbfv / 20) : 0;
         
-        const mixedSignal = new Float32Array(signal.length);
-        for (let i = 0; i < signal.length; i++) {
+        const mixedSignal = new Float32Array(noise.length);
+        for (let i = 0; i < noise.length; i++) {
             mixedSignal[i] = volume * (scalingFactorSignal * signal[i] + scalingFactorNoise * noise[i]);
         }
 
@@ -119,22 +173,29 @@ export class Radio {
             return;
         }
 
-        // generate samples at the end of the buffer, so advance time by the buffered ms.
-        now.setMilliseconds(now.getMilliseconds() + inBufferMs);
+        let sampleRate = this.audio?.sampleRate ?? 22000;
 
-        const noise = this.generateWhiteNoise(generateMs);
-        const signal = this.satellite.getSample(now, generateMs);
-
+        let noise: Float32Array
         let signalDbfv = -Infinity;
-        const lookAngles = this.satellite.getLookAngles(now, this.observer)
-        if (lookAngles) {
-            signalDbfv = this.getSignalStrength(this.satellite.antennaPowerW, this.satellite.frequencyMhz, lookAngles)
+        let signal: Float32Array = new Float32Array(sampleRate * generateMs);
+        
+        noise = this.generateWhiteNoise(sampleRate, generateMs);
+
+        if (this.audio != null) {
+            // generate samples at the end of the buffer, so advance time by the buffered ms.
+            now.setMilliseconds(now.getMilliseconds() + inBufferMs);
+
+            signal = this.getSample(this.audio, now, generateMs);
+            const lookAngles = this.satellite.getLookAngles(now, this.observer)
+            if (lookAngles) {
+                signalDbfv = this.getSignalStrength(this.antennaPowerW, this.frequencyMhz, lookAngles)
+            }
         }
 
         let mixed = this.mixSignals(20, signal, noise, signalDbfv, this.noiseDbfv);
 
         const source = this.audioContext.createBufferSource();
-        const buffer = this.audioContext.createBuffer(1, mixed.length, this.sampleRate);
+        const buffer = this.audioContext.createBuffer(1, mixed.length, sampleRate);
         buffer.getChannelData(0).set(mixed);
         source.buffer = buffer;
         source.connect(this.audioContext.destination);

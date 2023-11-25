@@ -58051,7 +58051,7 @@ var App = function (props) {
         }, 16);
         return function () { return clearTimeout(id); };
     }, [now, delta, radioTurnedOn]);
-    return ((0, jsx_runtime_1.jsxs)("div", { style: { maxWidth: "800px", margin: "0 auto" }, children: [(0, jsx_runtime_1.jsx)(Title, { children: "Ground control" }), (0, jsx_runtime_1.jsx)("p", { children: "Welcome to the command center of CSOKASAT-01, a virtual satellite soaring through the celestial expanse in a polar orbit! Embark on an exhilarating journey into the vastness of space, where cutting-edge technology meets the wonders of exploration. CSOKASAT-01, our state-of-the-art virtual satellite, is on a mission to capture the beauty of Earth from a unique perspective, transmitting continuous SSTV PD-120 images that showcase the breathtaking landscapes and phenomena our planet has to offer." }), (0, jsx_runtime_1.jsxs)(InfoTable, { children: [(0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Local time:" }), (0, jsx_runtime_1.jsx)(DataCell, { children: (0, jsx_runtime_1.jsx)(date_1.DateTime, { time: now }) })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Next pass:" }), (0, jsx_runtime_1.jsx)(DataCell, { children: (0, jsx_runtime_1.jsx)(nextpass_1.NextPass, { satellite: props.satellite, observer: props.observer, time: now }) })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Tle:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [(0, jsx_runtime_1.jsx)("div", { children: props.satellite.tle1 }), (0, jsx_runtime_1.jsx)("div", { children: props.satellite.tle2 })] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Range:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.rangeSat.toFixed(2), " km"] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Elevation:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation.toFixed(2), "\u00BA"] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Azimuth:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.azimuth.toFixed(2), "\u00BA"] })] })] }), (0, jsx_runtime_1.jsx)("p", { children: "Our station tracks the satellite as it orbits the Earth with a 5 elements Yagi antenna. The radio system is designed to decode the FM signal transmitted by the satellite, automatically adjusting for the Doppler shift. This ensures a reliable and continuous connection between the ground control and the satellite, providing valuable data and insights during its journey in space." }), (0, jsx_runtime_1.jsxs)(InfoTable, { children: [(0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Radio:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [" ", (0, jsx_runtime_1.jsx)("button", { onClick: function () { return dispatch((0, radio_1.toggle)()); }, children: radio.turnedOn ? "On" : "Off" })] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Frequency:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [props.satellite.frequencyMhz, " Mhz"] })] })] }), (0, jsx_runtime_1.jsx)("p", {}), (0, jsx_runtime_1.jsx)(map_1.default, { style: { height: "500px", width: "800px", border: "16px solid white" }, satellite: props.satellite, observer: props.observer, time: now }), (0, jsx_runtime_1.jsx)(Footer, { children: (0, jsx_runtime_1.jsx)("div", { children: "2023 - csokavar.hu - text by ChatGpt" }) })] }));
+    return ((0, jsx_runtime_1.jsxs)("div", { style: { maxWidth: "800px", margin: "0 auto" }, children: [(0, jsx_runtime_1.jsx)(Title, { children: "Ground control" }), (0, jsx_runtime_1.jsx)("p", { children: "Welcome to the command center of CSOKASAT-01, a virtual satellite soaring through the celestial expanse in a polar orbit! Embark on an exhilarating journey into the vastness of space, where cutting-edge technology meets the wonders of exploration. CSOKASAT-01, our state-of-the-art virtual satellite, is on a mission to capture the beauty of Earth from a unique perspective, transmitting continuous SSTV PD-120 images that showcase the breathtaking landscapes and phenomena our planet has to offer." }), (0, jsx_runtime_1.jsxs)(InfoTable, { children: [(0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Local time:" }), (0, jsx_runtime_1.jsx)(DataCell, { children: (0, jsx_runtime_1.jsx)(date_1.DateTime, { time: now }) })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Next pass:" }), (0, jsx_runtime_1.jsx)(DataCell, { children: (0, jsx_runtime_1.jsx)(nextpass_1.NextPass, { satellite: props.satellite, observer: props.observer, time: now }) })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Tle:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [(0, jsx_runtime_1.jsx)("div", { children: props.satellite.tle1 }), (0, jsx_runtime_1.jsx)("div", { children: props.satellite.tle2 })] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Range:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.rangeSat.toFixed(2), " km"] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Elevation:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation.toFixed(2), "\u00BA"] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Azimuth:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.azimuth.toFixed(2), "\u00BA"] })] })] }), (0, jsx_runtime_1.jsx)("p", { children: "Our station tracks the satellite as it orbits the Earth with a 5 elements Yagi antenna. The radio system is designed to decode the FM signal transmitted by the satellite, automatically adjusting for the Doppler shift. This ensures a reliable and continuous connection between the ground control and the satellite, providing valuable data and insights during its journey in space." }), (0, jsx_runtime_1.jsxs)(InfoTable, { children: [(0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Radio:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [" ", (0, jsx_runtime_1.jsx)("button", { onClick: function () { return dispatch((0, radio_1.toggle)()); }, children: radio.turnedOn ? "On" : "Off" })] })] }), (0, jsx_runtime_1.jsxs)(InfoRow, { children: [(0, jsx_runtime_1.jsx)(LabelCell, { children: "Frequency:" }), (0, jsx_runtime_1.jsxs)(DataCell, { children: [props.radio.frequencyMhz, " Mhz"] })] })] }), (0, jsx_runtime_1.jsx)("p", {}), (0, jsx_runtime_1.jsx)(map_1.default, { style: { height: "500px", width: "800px", border: "16px solid white" }, satellite: props.satellite, observer: props.observer, time: now }), (0, jsx_runtime_1.jsx)(Footer, { children: (0, jsx_runtime_1.jsx)("div", { children: "2023 - csokavar.hu - text by ChatGpt" }) })] }));
 };
 exports["default"] = App;
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6;
@@ -58240,6 +58240,44 @@ exports.NextPass = NextPass;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var jsx_runtime_1 = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+var client_1 = __importDefault(__webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js"));
+var react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+var satellite_1 = __webpack_require__(/*! ./models/satellite */ "./src/models/satellite.ts");
+var store_1 = __importDefault(__webpack_require__(/*! ./redux/store */ "./src/redux/store.ts"));
+var radio_1 = __webpack_require__(/*! ./models/radio */ "./src/models/radio.ts");
+var app_1 = __importDefault(__webpack_require__(/*! ./components/app */ "./src/components/app.tsx"));
+var Loader = function () {
+    var satelliteAntennaPowerW = 5;
+    var frequencyMhz = 137.5;
+    var receiverAntennaGainDb = 5; //for Yagi
+    var noiseDb = -100;
+    var observer = {
+        lat: 47.49801,
+        lng: 19.03991,
+    };
+    var satellite = new satellite_1.Satellite("1 56541U 23005A   23314.56637269  .00000380  00000+0  22900-3 0  9998", "2 56541  99.0817   2.7100 0013809 187.3077 172.7896 14.12862697760358");
+    var radio = new radio_1.Radio(observer, satellite, satelliteAntennaPowerW, frequencyMhz, receiverAntennaGainDb, noiseDb, "sstv.mp3");
+    return (0, jsx_runtime_1.jsx)(app_1.default, { satellite: satellite, radio: radio, observer: observer });
+};
+var root = client_1.default.createRoot(document.getElementById("app"));
+root.render((0, jsx_runtime_1.jsx)(react_redux_1.Provider, { store: store_1.default, children: (0, jsx_runtime_1.jsx)(Loader, {}) }));
+
+
+/***/ }),
+
+/***/ "./src/models/radio.ts":
+/*!*****************************!*\
+  !*** ./src/models/radio.ts ***!
+  \*****************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -58276,100 +58314,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-var jsx_runtime_1 = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-// index.tsx
-var react_1 = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var client_1 = __importDefault(__webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js"));
-var react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-var satellite_1 = __webpack_require__(/*! ./models/satellite */ "./src/models/satellite.ts");
-var store_1 = __importDefault(__webpack_require__(/*! ./redux/store */ "./src/redux/store.ts"));
-var radio_1 = __webpack_require__(/*! ./models/radio */ "./src/models/radio.ts");
-var app_1 = __importDefault(__webpack_require__(/*! ./components/app */ "./src/components/app.tsx"));
-function loadAudio(url) {
-    return __awaiter(this, void 0, void 0, function () {
-        var result, arrayBuffer;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch(url)];
-                case 1:
-                    result = _a.sent();
-                    return [4 /*yield*/, result.arrayBuffer()];
-                case 2:
-                    arrayBuffer = _a.sent();
-                    return [2 /*return*/, new Promise(function (resolve, reject) {
-                            var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                            audioContext.decodeAudioData(arrayBuffer, resolve, reject);
-                        })];
-            }
-        });
-    });
-}
-var Loader = function () {
-    var _a = (0, react_1.useState)(null), audio = _a[0], setAudio = _a[1];
-    (0, react_1.useEffect)(function () {
-        var load = function () { return __awaiter(void 0, void 0, void 0, function () {
-            var audio;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, loadAudio("sstv.mp3")];
-                    case 1:
-                        audio = _a.sent();
-                        setAudio(audio);
-                        return [2 /*return*/];
-                }
-            });
-        }); };
-        load();
-    }, []);
-    if (audio == null) {
-        return (0, jsx_runtime_1.jsx)("div", { children: "Loading..." });
-    }
-    else {
-        var satelliteAntennaPowerW = 5;
-        var frequencyMhz = 137.5;
-        var receiverAntennaGainDb = 5; //for Yagi
-        var noiseDb = -100;
-        var observer = {
-            lat: 47.49801,
-            lng: 19.03991,
-        };
-        var satellite = new satellite_1.Satellite("1 56541U 23005A   23314.56637269  .00000380  00000+0  22900-3 0  9998", "2 56541  99.0817   2.7100 0013809 187.3077 172.7896 14.12862697760358", audio, satelliteAntennaPowerW, frequencyMhz);
-        var radio = new radio_1.Radio(observer, satellite, audio.sampleRate, receiverAntennaGainDb, noiseDb);
-        return (0, jsx_runtime_1.jsx)(app_1.default, { satellite: satellite, radio: radio, observer: observer });
-    }
-};
-var root = client_1.default.createRoot(document.getElementById("app"));
-root.render((0, jsx_runtime_1.jsx)(react_redux_1.Provider, { store: store_1.default, children: (0, jsx_runtime_1.jsx)(Loader, {}) }));
-
-
-/***/ }),
-
-/***/ "./src/models/radio.ts":
-/*!*****************************!*\
-  !*** ./src/models/radio.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Radio = void 0;
 var bufferLengthMs = 1000;
 var Radio = /** @class */ (function () {
-    function Radio(observer, satellite, sampleRate, antennaGainDb, noiseDb) {
+    function Radio(observer, satellite, antennaPowerW, frequencyMhz, antennaGainDb, noiseDb, audioUrl) {
         this.audioLengthMs = 0;
+        this.sampleStart = 0;
         this.satellite = satellite;
         this.observer = observer;
-        this.sampleRate = sampleRate;
         this.antennaGainDb = antennaGainDb;
         this.noiseDbfv = this.toDbfv(noiseDb);
+        this.antennaPowerW = antennaPowerW;
+        this.frequencyMhz = frequencyMhz;
+        this.loadAudio(audioUrl);
     }
-    Radio.prototype.generateWhiteNoise = function (ms) {
-        var noise = new Float32Array(ms / 1000 * this.sampleRate);
+    Radio.prototype.loadAudio = function (url) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result, arrayBuffer, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, fetch(url)];
+                    case 1:
+                        result = _b.sent();
+                        return [4 /*yield*/, result.arrayBuffer()];
+                    case 2:
+                        arrayBuffer = _b.sent();
+                        _a = this;
+                        return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                                audioContext.decodeAudioData(arrayBuffer, resolve, reject);
+                            })];
+                    case 3:
+                        _a.audio = _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Radio.prototype.getSample = function (audio, time, signalLengthMs) {
+        var samplesRequired = Math.floor(signalLengthMs / 1000 * audio.sampleRate);
+        var part1 = audio.getChannelData(0).subarray(this.sampleStart, this.sampleStart + samplesRequired);
+        this.sampleStart += samplesRequired;
+        this.sampleStart %= audio.getChannelData(0).length;
+        var samplesCaptured = part1.length;
+        if (samplesCaptured == samplesRequired) {
+            return part1;
+        }
+        // wrap around
+        var samplesMissing = samplesRequired - samplesCaptured;
+        var res = new Float32Array(samplesRequired);
+        res.set(part1);
+        res.set(this.audio.getChannelData(0).subarray(0, samplesMissing), part1.length);
+        return res;
+    };
+    Radio.prototype.generateWhiteNoise = function (sampleRate, ms) {
+        var noise = new Float32Array(ms / 1000 * sampleRate);
         for (var i = 0; i < noise.length; i++) {
             noise[i] = (Math.random() * 2 - 1);
         }
@@ -58406,13 +58406,14 @@ var Radio = /** @class */ (function () {
     Radio.prototype.mixSignals = function (volume, signal, noise, signalDbfv, noiseDbfv) {
         var scalingFactorSignal = isFinite(signalDbfv) ? Math.pow(10, (signalDbfv / 20)) : 0;
         var scalingFactorNoise = isFinite(noiseDbfv) ? Math.pow(10, (noiseDbfv / 20)) : 0;
-        var mixedSignal = new Float32Array(signal.length);
-        for (var i = 0; i < signal.length; i++) {
+        var mixedSignal = new Float32Array(noise.length);
+        for (var i = 0; i < noise.length; i++) {
             mixedSignal[i] = volume * (scalingFactorSignal * signal[i] + scalingFactorNoise * noise[i]);
         }
         return mixedSignal;
     };
     Radio.prototype.tick = function (now, turnedOn) {
+        var _a, _b;
         // 'now' is in simulation time but we generate audio in real time, so we need
         // to know how much time was spent since tick was last called, in order to
         // calculate when will the audio buffer run out
@@ -58438,18 +58439,23 @@ var Radio = /** @class */ (function () {
         if (generateMs <= 0) {
             return;
         }
-        // generate samples at the end of the buffer, so advance time by the buffered ms.
-        now.setMilliseconds(now.getMilliseconds() + inBufferMs);
-        var noise = this.generateWhiteNoise(generateMs);
-        var signal = this.satellite.getSample(now, generateMs);
+        var sampleRate = (_b = (_a = this.audio) === null || _a === void 0 ? void 0 : _a.sampleRate) !== null && _b !== void 0 ? _b : 22000;
+        var noise;
         var signalDbfv = -Infinity;
-        var lookAngles = this.satellite.getLookAngles(now, this.observer);
-        if (lookAngles) {
-            signalDbfv = this.getSignalStrength(this.satellite.antennaPowerW, this.satellite.frequencyMhz, lookAngles);
+        var signal = new Float32Array(sampleRate * generateMs);
+        noise = this.generateWhiteNoise(sampleRate, generateMs);
+        if (this.audio != null) {
+            // generate samples at the end of the buffer, so advance time by the buffered ms.
+            now.setMilliseconds(now.getMilliseconds() + inBufferMs);
+            signal = this.getSample(this.audio, now, generateMs);
+            var lookAngles = this.satellite.getLookAngles(now, this.observer);
+            if (lookAngles) {
+                signalDbfv = this.getSignalStrength(this.antennaPowerW, this.frequencyMhz, lookAngles);
+            }
         }
         var mixed = this.mixSignals(20, signal, noise, signalDbfv, this.noiseDbfv);
         var source = this.audioContext.createBufferSource();
-        var buffer = this.audioContext.createBuffer(1, mixed.length, this.sampleRate);
+        var buffer = this.audioContext.createBuffer(1, mixed.length, sampleRate);
         buffer.getChannelData(0).set(mixed);
         source.buffer = buffer;
         source.connect(this.audioContext.destination);
@@ -58499,14 +58505,10 @@ exports.Satellite = void 0;
 var satellite = __importStar(__webpack_require__(/*! satellite.js */ "./node_modules/satellite.js/dist/satellite.es.js"));
 var earthRadius = 6378.13;
 var Satellite = /** @class */ (function () {
-    function Satellite(tle1, tle2, audio, antennaPowerW, frequencyMhz) {
-        this.sampleStart = 0;
+    function Satellite(tle1, tle2) {
         this.tle1 = tle1;
         this.tle2 = tle2;
         this.satelliteRecord = satellite.twoline2satrec(tle1, tle2);
-        this.audio = audio;
-        this.antennaPowerW = antennaPowerW;
-        this.frequencyMhz = frequencyMhz;
     }
     Satellite.prototype.getLookAngles = function (time, observer) {
         var posAndVelocity = satellite.propagate(this.satelliteRecord, time);
@@ -58527,22 +58529,6 @@ var Satellite = /** @class */ (function () {
             elevation: res.elevation / Math.PI * 180,
             rangeSat: res.rangeSat,
         };
-    };
-    Satellite.prototype.getSample = function (time, signalLengthMs) {
-        var samplesRequired = Math.floor(signalLengthMs / 1000 * this.audio.sampleRate);
-        var part1 = this.audio.getChannelData(0).subarray(this.sampleStart, this.sampleStart + samplesRequired);
-        this.sampleStart += samplesRequired;
-        this.sampleStart %= this.audio.getChannelData(0).length;
-        var samplesCaptured = part1.length;
-        if (samplesCaptured == samplesRequired) {
-            return part1;
-        }
-        // wrap around
-        var samplesMissing = samplesRequired - samplesCaptured;
-        var res = new Float32Array(samplesRequired);
-        res.set(part1);
-        res.set(this.audio.getChannelData(0).subarray(0, samplesMissing), part1.length);
-        return res;
     };
     Satellite.prototype.getSatPos = function (time) {
         var positionEci = satellite.propagate(this.satelliteRecord, time);
