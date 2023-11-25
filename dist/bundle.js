@@ -58171,17 +58171,28 @@ exports.NextPass = void 0;
 var jsx_runtime_1 = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var date_1 = __webpack_require__(/*! ./date */ "./src/components/date.tsx");
+var elevationLimitDeg = 5;
 var Control = react_1.default.memo(function (props) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     var passStartSeconds = props.timeMinutes * 60;
     var maxElevation = 0;
-    // take five minute steps:
+    // skip current pass:
     for (var step = 0; step < 10000; step++) {
         var time = new Date(passStartSeconds * 1000);
         var lookAngles = props.satellite.getLookAngles(time, props.observer);
         var elevation = (_a = lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation) !== null && _a !== void 0 ? _a : 0;
+        if (elevation < 0) {
+            break;
+        }
+        passStartSeconds += 5 * 60;
+    }
+    // take five minute steps:
+    for (var step = 0; step < 10000; step++) {
+        var time = new Date(passStartSeconds * 1000);
+        var lookAngles = props.satellite.getLookAngles(time, props.observer);
+        var elevation = (_b = lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation) !== null && _b !== void 0 ? _b : 0;
         maxElevation = Math.max(maxElevation, elevation);
-        if (maxElevation >= 2) {
+        if (maxElevation >= elevationLimitDeg) {
             break;
         }
         passStartSeconds += 5 * 60;
@@ -58193,8 +58204,8 @@ var Control = react_1.default.memo(function (props) {
     for (;;) {
         var time = new Date(passStartSeconds * 1000);
         var lookAngles = props.satellite.getLookAngles(time, props.observer);
-        var elevation = (_b = lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation) !== null && _b !== void 0 ? _b : 0;
-        if (elevation < 2) {
+        var elevation = (_c = lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation) !== null && _c !== void 0 ? _c : 0;
+        if (elevation < 0) {
             break;
         }
         passStartSeconds--;
@@ -58204,9 +58215,9 @@ var Control = react_1.default.memo(function (props) {
     for (var seconds = 0;; seconds++) {
         var time = new Date((passStartSeconds + seconds) * 1000);
         var lookAngles = props.satellite.getLookAngles(time, props.observer);
-        var elevation = (_c = lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation) !== null && _c !== void 0 ? _c : 0;
+        var elevation = (_d = lookAngles === null || lookAngles === void 0 ? void 0 : lookAngles.elevation) !== null && _d !== void 0 ? _d : 0;
         maxElevation = Math.max(maxElevation, elevation);
-        if (elevation < 2) {
+        if (elevation < 0) {
             break;
         }
     }
@@ -58315,7 +58326,7 @@ var Loader = function () {
         load();
     }, []);
     if (audio == null) {
-        return (0, jsx_runtime_1.jsx)("div", { children: "loading" });
+        return (0, jsx_runtime_1.jsx)("div", { children: "Loading..." });
     }
     else {
         var satelliteAntennaPowerW = 5;
