@@ -5,8 +5,8 @@ import { Satellite } from './satellite';
 const bufferLengthSeconds = 1;
 export class Radio {
     satellite: Satellite;
-    audioEndSeconds: number;
-    audioContext: AudioContext;
+    audioContext: AudioContext | undefined;
+    audioEndSeconds: number = 0;
     observer: Observer;
     antennaGainDb: number;
     noiseDbfv: number;
@@ -16,6 +16,7 @@ export class Radio {
     antennaPowerW: number;
     frequencyMhz: number;
     sampleStart = 0
+    epoch: Date;
 
     constructor(
         observer: Observer,
@@ -33,13 +34,11 @@ export class Radio {
         this.noiseDbfv = this.toDbfv(noiseDb);
         this.antennaPowerW = antennaPowerW;
         this.frequencyMhz = frequencyMhz;
-
-        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        this.audioEndSeconds = -Infinity;
-        this.loadAudio(audioUrl, epoch);
+        this.epoch = epoch;
+        this.loadAudio(audioUrl);
     }
 
-    async loadAudio(url: string, epoch: Date) {
+    async loadAudio(url: string) {
         const result = await fetch(url);
         const arrayBuffer = await result.arrayBuffer();
 
@@ -48,16 +47,27 @@ export class Radio {
             audioContext.decodeAudioData(arrayBuffer, resolve, reject);
         });
 
-        if (this.audio) {
-            const msSinceEpoch = new Date().getTime() - epoch.getTime();
+        this.adjustSampleStartToEpoch();
+    }
+
+    adjustSampleStartToEpoch() {
+        if (this.audio != null) {
+            const msSinceEpoch = new Date().getTime() - this.epoch.getTime();
             this.sampleStart = Math.floor(msSinceEpoch / 1000 * this.audio.sampleRate);
             this.sampleStart %= this.audio.getChannelData(0).length;
         }
     }
 
+    getSampleRate(audio: AudioBuffer | undefined) {
+        return audio?.sampleRate ?? 22000;
+    }
 
-    getSample(audio: AudioBuffer, signalLengthSeconds: number): Float32Array {
+    getSample(audio: AudioBuffer | undefined, signalLengthSeconds: number): Float32Array {
 
+        if (!audio) {
+            return new Float32Array(signalLengthSeconds * this.getSampleRate(audio));
+        }
+        
         const samplesRequired = Math.floor(signalLengthSeconds * audio.sampleRate);
 
         const part1 = audio.getChannelData(0).subarray(
@@ -147,6 +157,20 @@ export class Radio {
     }
 
     tick(now: Date, turnedOn: boolean) {
+        
+        if (!turnedOn) {
+            if (this.audioContext) {
+                this.audioContext.close();
+                this.audioContext = undefined;
+            }
+            return;
+        }
+
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            this.audioEndSeconds = 0;
+            this.adjustSampleStartToEpoch();
+        }
 
         let bufferedSeconds = Math.max(0, this.audioEndSeconds - this.audioContext.currentTime);
         let generateSeconds = bufferLengthSeconds - bufferedSeconds;
@@ -155,45 +179,31 @@ export class Radio {
         if (generateSeconds <= 0) {
             return;
         }
-        console.log(generateSeconds);
 
-        let sampleRate = this.audio?.sampleRate ?? 22000;
+        const sampleRate = this.getSampleRate(this.audio)
 
-        let noise: Float32Array
+        const noise = this.generateWhiteNoise(sampleRate, generateSeconds);
+
+        // when calculating the look angles we need to check the position of the
+        // satellite at the end of the buffer
+        const signal = this.getSample(this.audio, generateSeconds);
         let signalDbfv = -Infinity;
-        let signal: Float32Array = new Float32Array(sampleRate * generateSeconds);
-        
-        noise = this.generateWhiteNoise(sampleRate, generateSeconds);
-
-        if (this.audio != null) {
-            signal = this.getSample(this.audio, generateSeconds);
-
-            // when calculating the look angles we need to check the position of the
-            // satellite at the end of the buffer
-            now.setSeconds(now.getSeconds() + bufferedSeconds);
-            const lookAngles = this.satellite.getLookAngles(now, this.observer)
-            if (lookAngles) {
-                signalDbfv = this.getSignalStrength(this.antennaPowerW, this.frequencyMhz, lookAngles)
-            }
+        now.setSeconds(now.getSeconds() + bufferedSeconds);
+        const lookAngles = this.satellite.getLookAngles(now, this.observer)
+        if (lookAngles) {
+            signalDbfv = this.getSignalStrength(this.antennaPowerW, this.frequencyMhz, lookAngles)
         }
         
-        if (turnedOn) {
-            if (this.audioEndSeconds == -Infinity) {
-                this.audioEndSeconds = 0;
-            }
+        let mixed = this.mixSignals(20, signal, noise, signalDbfv, this.noiseDbfv);
 
-            let mixed = this.mixSignals(20, signal, noise, signalDbfv, this.noiseDbfv);
-            const source = this.audioContext.createBufferSource();
-            const buffer = this.audioContext.createBuffer(1, mixed.length, sampleRate);
-            buffer.getChannelData(0).set(mixed);
-            source.buffer = buffer;
-            source.start(this.audioEndSeconds);
-            source.connect(this.audioContext.destination);
-        }
+        const source = this.audioContext.createBufferSource();
+        const buffer = this.audioContext.createBuffer(1, mixed.length, sampleRate);
+        buffer.getChannelData(0).set(mixed);
+        source.buffer = buffer;
+        source.start(this.audioEndSeconds);
+        source.connect(this.audioContext.destination);
 
-        if (this.audioEndSeconds != -Infinity) {
-            this.audioEndSeconds += generateSeconds;
-        }
+        this.audioEndSeconds += generateSeconds;
     }
 }
 
