@@ -66,7 +66,7 @@ const SatelliteComponent = React.memo<SatelliteComponentProps>((props) => {
         let color = "blue";
         let opacity = 1;
         if (hasWrapAround(prev[0], curr[0]) || hasWrapAround(prev[1], curr[1])) {
-            console.log(dtMinutes, prev, curr)
+            // console.log(dtMinutes, prev, curr)
             opacity = 0;
         }
 

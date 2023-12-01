@@ -34,7 +34,8 @@ const Loader = () => {
         frequencyMhz,
         receiverAntennaGainDb,
         noiseDb,
-        "sstv.mp3"
+        "sstv.mp3",
+        new Date(2023,11,1),
     );
     
     return <App satellite={satellite} radio={radio} observer={observer} />;
