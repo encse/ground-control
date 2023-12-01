@@ -106,6 +106,8 @@ export class Radio {
         lookAngles: LookAngles,
     ): number {
 
+        // lookAngles.rangeSat = 600;
+        // lookAngles.elevation = 2;
         if (lookAngles.elevation < 0) {
             return -Infinity;
         }
@@ -146,7 +148,7 @@ export class Radio {
     ): Float32Array {
         
         let scalingFactorSignal = isFinite(signalDbfv) ?  10 ** (signalDbfv / 20) : 0;
-        let scalingFactorNoise = 0 //isFinite(noiseDbfv) ?  10 ** (noiseDbfv / 20) : 0;
+        let scalingFactorNoise = isFinite(noiseDbfv) ?  10 ** (noiseDbfv / 20) : 0;
         
         const mixedSignal = new Float32Array(noise.length);
         for (let i = 0; i < noise.length; i++) {

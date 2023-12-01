@@ -58131,7 +58131,7 @@ var SatelliteComponent = react_1.default.memo(function (props) {
         var color = "blue";
         var opacity = 1;
         if (hasWrapAround(prev[0], curr[0]) || hasWrapAround(prev[1], curr[1])) {
-            console.log(dtMinutes, prev, curr);
+            // console.log(dtMinutes, prev, curr)
             opacity = 0;
         }
         if (dtMinutes < 1) {
@@ -58261,7 +58261,7 @@ var Loader = function () {
         lng: 19.03991,
     };
     var satellite = new satellite_1.Satellite("1 56541U 23005A   23314.56637269  .00000380  00000+0  22900-3 0  9998", "2 56541  99.0817   2.7100 0013809 187.3077 172.7896 14.12862697760358");
-    var radio = new radio_1.Radio(observer, satellite, satelliteAntennaPowerW, frequencyMhz, receiverAntennaGainDb, noiseDb, "sstv.mp3");
+    var radio = new radio_1.Radio(observer, satellite, satelliteAntennaPowerW, frequencyMhz, receiverAntennaGainDb, noiseDb, "sstv.mp3", new Date(2023, 11, 1));
     return (0, jsx_runtime_1.jsx)(app_1.default, { satellite: satellite, radio: radio, observer: observer });
 };
 var root = client_1.default.createRoot(document.getElementById("app"));
@@ -58316,10 +58316,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Radio = void 0;
-var bufferLengthMs = 1000;
+var bufferLengthSeconds = 1;
 var Radio = /** @class */ (function () {
-    function Radio(observer, satellite, antennaPowerW, frequencyMhz, antennaGainDb, noiseDb, audioUrl) {
-        this.audioLengthMs = 0;
+    function Radio(observer, satellite, antennaPowerW, frequencyMhz, antennaGainDb, noiseDb, audioUrl, epoch) {
+        this.audioEndSeconds = 0;
         this.sampleStart = 0;
         this.satellite = satellite;
         this.observer = observer;
@@ -58327,6 +58327,7 @@ var Radio = /** @class */ (function () {
         this.noiseDbfv = this.toDbfv(noiseDb);
         this.antennaPowerW = antennaPowerW;
         this.frequencyMhz = frequencyMhz;
+        this.epoch = epoch;
         this.loadAudio(audioUrl);
     }
     Radio.prototype.loadAudio = function (url) {
@@ -58347,13 +58348,28 @@ var Radio = /** @class */ (function () {
                             })];
                     case 3:
                         _a.audio = _b.sent();
+                        this.adjustSampleStartToEpoch();
                         return [2 /*return*/];
                 }
             });
         });
     };
-    Radio.prototype.getSample = function (audio, time, signalLengthMs) {
-        var samplesRequired = Math.floor(signalLengthMs / 1000 * audio.sampleRate);
+    Radio.prototype.adjustSampleStartToEpoch = function () {
+        if (this.audio != null) {
+            var msSinceEpoch = new Date().getTime() - this.epoch.getTime();
+            this.sampleStart = Math.floor(msSinceEpoch / 1000 * this.audio.sampleRate);
+            this.sampleStart %= this.audio.getChannelData(0).length;
+        }
+    };
+    Radio.prototype.getSampleRate = function (audio) {
+        var _a;
+        return (_a = audio === null || audio === void 0 ? void 0 : audio.sampleRate) !== null && _a !== void 0 ? _a : 22000;
+    };
+    Radio.prototype.getSample = function (audio, signalLengthSeconds) {
+        if (!audio) {
+            return new Float32Array(signalLengthSeconds * this.getSampleRate(audio));
+        }
+        var samplesRequired = Math.floor(signalLengthSeconds * audio.sampleRate);
         var part1 = audio.getChannelData(0).subarray(this.sampleStart, this.sampleStart + samplesRequired);
         this.sampleStart += samplesRequired;
         this.sampleStart %= audio.getChannelData(0).length;
@@ -58368,14 +58384,16 @@ var Radio = /** @class */ (function () {
         res.set(this.audio.getChannelData(0).subarray(0, samplesMissing), part1.length);
         return res;
     };
-    Radio.prototype.generateWhiteNoise = function (sampleRate, ms) {
-        var noise = new Float32Array(ms / 1000 * sampleRate);
+    Radio.prototype.generateWhiteNoise = function (sampleRate, seconds) {
+        var noise = new Float32Array(seconds * sampleRate);
         for (var i = 0; i < noise.length; i++) {
             noise[i] = (Math.random() * 2 - 1);
         }
         return noise;
     };
     Radio.prototype.getSignalStrength = function (originalPowerW, frequencyMhz, lookAngles) {
+        // lookAngles.rangeSat = 600;
+        // lookAngles.elevation = 2;
         if (lookAngles.elevation < 0) {
             return -Infinity;
         }
@@ -58413,54 +58431,44 @@ var Radio = /** @class */ (function () {
         return mixedSignal;
     };
     Radio.prototype.tick = function (now, turnedOn) {
-        var _a, _b;
-        // 'now' is in simulation time but we generate audio in real time, so we need
-        // to know how much time was spent since tick was last called, in order to
-        // calculate when will the audio buffer run out
-        var realNow = new Date();
-        if (!turnedOn && this.audioContext) {
-            this.audioContext.close();
-            this.audioContext = undefined;
-            this.audioLengthMs = 0;
-            this.audioStart = undefined;
-        }
-        else if (turnedOn && !this.audioContext) {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (!turnedOn) {
+            if (this.audioContext) {
+                this.audioContext.close();
+                this.audioContext = undefined;
+            }
+            return;
         }
         if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.audioEndSeconds = 0;
+            this.adjustSampleStartToEpoch();
+        }
+        var bufferedSeconds = Math.max(0, this.audioEndSeconds - this.audioContext.currentTime);
+        var generateSeconds = bufferLengthSeconds - bufferedSeconds;
+        //  generate chunks rounded to 10ms, otherwise floating point errors will generate skew in the image.
+        generateSeconds = Math.floor(generateSeconds * 100) / 100;
+        if (generateSeconds <= 0) {
             return;
         }
-        if (!this.audioStart) {
-            this.audioStart = realNow;
-            this.audioLengthMs = 0;
-        }
-        var inBufferMs = Math.max(0, this.audioLengthMs - (realNow.getTime() - this.audioStart.getTime()));
-        var generateMs = bufferLengthMs - inBufferMs;
-        if (generateMs <= 0) {
-            return;
-        }
-        var sampleRate = (_b = (_a = this.audio) === null || _a === void 0 ? void 0 : _a.sampleRate) !== null && _b !== void 0 ? _b : 22000;
-        var noise;
+        var sampleRate = this.getSampleRate(this.audio);
+        var noise = this.generateWhiteNoise(sampleRate, generateSeconds);
+        // when calculating the look angles we need to check the position of the
+        // satellite at the end of the buffer
+        var signal = this.getSample(this.audio, generateSeconds);
         var signalDbfv = -Infinity;
-        var signal = new Float32Array(sampleRate * generateMs);
-        noise = this.generateWhiteNoise(sampleRate, generateMs);
-        if (this.audio != null) {
-            // generate samples at the end of the buffer, so advance time by the buffered ms.
-            now.setMilliseconds(now.getMilliseconds() + inBufferMs);
-            signal = this.getSample(this.audio, now, generateMs);
-            var lookAngles = this.satellite.getLookAngles(now, this.observer);
-            if (lookAngles) {
-                signalDbfv = this.getSignalStrength(this.antennaPowerW, this.frequencyMhz, lookAngles);
-            }
+        now.setSeconds(now.getSeconds() + bufferedSeconds);
+        var lookAngles = this.satellite.getLookAngles(now, this.observer);
+        if (lookAngles) {
+            signalDbfv = this.getSignalStrength(this.antennaPowerW, this.frequencyMhz, lookAngles);
         }
         var mixed = this.mixSignals(20, signal, noise, signalDbfv, this.noiseDbfv);
         var source = this.audioContext.createBufferSource();
         var buffer = this.audioContext.createBuffer(1, mixed.length, sampleRate);
         buffer.getChannelData(0).set(mixed);
         source.buffer = buffer;
+        source.start(this.audioEndSeconds);
         source.connect(this.audioContext.destination);
-        source.start(this.audioLengthMs / 1000);
-        this.audioLengthMs += generateMs;
+        this.audioEndSeconds += generateSeconds;
     };
     return Radio;
 }());
