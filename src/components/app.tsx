@@ -30,6 +30,13 @@ const DataCell = styled.td`
     padding: 8px;
 `;
 
+
+const Tle = styled.pre`
+    font-family: inherit;
+    margin: 0;
+`;
+
+
 const Title = styled.h1`
     color: white;
 `
@@ -89,8 +96,8 @@ const App = (props: { satellite: Satellite, radio: Radio, observer: Observer }) 
                 <InfoRow>
                     <LabelCell>Tle:</LabelCell>
                     <DataCell>
-                        <div>{props.satellite.tle1}</div>
-                        <div>{props.satellite.tle2}</div>
+                        <Tle>{props.satellite.tle1}</Tle>
+                        <Tle>{props.satellite.tle2}</Tle>
                     </DataCell>
                 </InfoRow>
 
